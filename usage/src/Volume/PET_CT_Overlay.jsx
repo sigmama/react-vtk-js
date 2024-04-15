@@ -9,6 +9,7 @@ import './PET_CT_Overlay.css';
 import {
   Contexts,
   Dataset,
+  MultiViewRoot,
   RegisterDataSet,
   ShareDataSetRoot,
   SliceRepresentation,
@@ -21,7 +22,10 @@ function Slider(props) {
   const onChange = (e) => {
     const value = Number(e.currentTarget.value);
     props.setValue(value);
-    setTimeout(view.renderView, 0);
+    if (props.setCTValue) {
+      props.setCTValue(value * 4);
+    }
+    setTimeout(view?.renderView, 0);
   };
   return (
     <label
@@ -55,7 +59,7 @@ function DropDown(props) {
   function onChange(e) {
     const value = e.currentTarget.value;
     props.setValue(value);
-    setTimeout(view.renderView, 0);
+    setTimeout(view?.renderView, 0);
   }
   return (
     <form>
@@ -136,7 +140,9 @@ const loadData = async () => {
     ptWebWorkers.terminateWorkers();
     ptImageData = vtkITKHelper.convertItkToVtkImage(ptitkImage);
   }
-  loadData.setMaxSlicingValue(ctImageData.getDimensions()[2] - 1);
+  console.log(ctImageData.getDimensions(), ptImageData.getDimensions());
+  loadData.setMaxKSlice(ctImageData.getDimensions()[2] - 1);
+  loadData.setMaxJSlice(ptImageData.getDimensions()[1] - 1);
   loadData.setStatusText('');
   loader.hidden = 'hidden';
   return [ctImageData, ptImageData];
@@ -145,12 +151,16 @@ const loadData = async () => {
 function Example(props) {
   const [statusText, setStatusText] = useState('Loading data, please wait ...');
   const [kSlice, setKSlice] = useState(0);
+  const [jSlice, setJSlice] = useState(0);
+  const [ctjSlice, setCTJSlice] = useState(0);
   const [colorWindow, setColorWindow] = useState(2048);
   const [colorLevel, setColorLevel] = useState(0);
   const [colorPreset, setColorPreset] = useState('jet');
   const [opacity, setOpacity] = useState(0.4);
   const [maxKSlice, setMaxKSlice] = useState(310);
-  loadData.setMaxSlicingValue = setMaxKSlice;
+  const [maxJSlice, setMaxJSlice] = useState(110);
+  loadData.setMaxKSlice = setMaxKSlice;
+  loadData.setMaxJSlice = setMaxJSlice;
   loadData.setStatusText = setStatusText;
 
   useEffect(() => {
@@ -158,11 +168,13 @@ function Example(props) {
       window.ctData = ctData;
       window.ptData = ptData;
       setKSlice(155);
+      setJSlice(64);
+      setCTJSlice(256);
     });
   }, []);
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
+    <MultiViewRoot>
       <ShareDataSetRoot>
         <RegisterDataSet id='ctData'>
           <Dataset dataset={window.ctData} />
@@ -170,15 +182,14 @@ function Example(props) {
         <RegisterDataSet id='ptData'>
           <Dataset dataset={window.ptData} />
         </RegisterDataSet>
-        <View
-          id='0'
-          camera={{
-            position: [0, 0, 0],
-            focalPoint: [0, 0, -1],
-            viewUp: [0, -1, 0],
-            parallelProjection: true,
+        <div
+          style={{
+            display: 'flex',
+            flexFlow: 'row',
+            flexWrap: 'wrap',
+            width: '100%',
+            height: '100%',
           }}
-          background={[0, 0, 0]}
         >
           <label
             style={{
@@ -191,14 +202,6 @@ function Example(props) {
           >
             {statusText}
           </label>
-          <Slider
-            label='Slice'
-            max={maxKSlice}
-            value={kSlice}
-            setValue={setKSlice}
-            orient='vertical'
-            style={{ top: '50%', left: '1%' }}
-          />
           <Slider
             label='Color Level'
             max={4095}
@@ -230,27 +233,103 @@ function Example(props) {
             style={{ top: '30px', left: '305px' }}
           />
           <div className='loader' id='loader' />
-          <SliceRepresentation
-            kSlice={kSlice}
-            property={{
-              opacity,
-            }}
-            colorMapPreset={colorPreset}
-          >
-            <UseDataSet id='ptData' />
-          </SliceRepresentation>
-          <SliceRepresentation
-            kSlice={kSlice}
-            property={{
-              colorWindow,
-              colorLevel,
+          <div
+            style={{
+              position: 'absolute',
+              left: '0px',
+              width: '50%',
+              height: '100%',
             }}
           >
-            <UseDataSet id='ctData' />
-          </SliceRepresentation>
-        </View>
+            <View
+              id='0'
+              camera={{
+                position: [0, 0, 0],
+                focalPoint: [0, 0, -1],
+                viewUp: [0, -1, 0],
+                parallelProjection: true,
+              }}
+              background={[0, 0, 0]}
+            >
+              <Slider
+                label='Slice'
+                max={maxKSlice}
+                value={kSlice}
+                setValue={setKSlice}
+                orient='vertical'
+                style={{ top: '50%', left: '1%' }}
+              />
+              <SliceRepresentation
+                kSlice={kSlice}
+                property={{
+                  opacity,
+                }}
+                colorMapPreset={colorPreset}
+              >
+                <UseDataSet id='ptData' />
+              </SliceRepresentation>
+              <SliceRepresentation
+                kSlice={kSlice}
+                property={{
+                  colorWindow,
+                  colorLevel,
+                }}
+              >
+                <UseDataSet id='ctData' />
+              </SliceRepresentation>
+            </View>
+          </div>
+          <div
+            style={{
+              position: 'absolute',
+              left: '50%',
+              width: '50%',
+              height: '100%',
+            }}
+          >
+            <View
+              id='0'
+              camera={{
+                position: [0, 0, 0],
+                focalPoint: [0, -1, 0],
+                viewUp: [0, 0, 1],
+                parallelProjection: true,
+              }}
+              background={[0, 0, 0]}
+            >
+              <Slider
+                label='Slice'
+                max={maxJSlice}
+                value={jSlice}
+                setValue={setJSlice}
+                setCTValue={setCTJSlice}
+                orient='vertical'
+                style={{ top: '50%', left: '5%' }}
+              />
+              <SliceRepresentation
+                id='pt'
+                jSlice={jSlice}
+                property={{
+                  opacity,
+                }}
+                colorMapPreset={colorPreset}
+              >
+                <UseDataSet id='ptData' />
+              </SliceRepresentation>
+              <SliceRepresentation
+                jSlice={ctjSlice}
+                property={{
+                  colorWindow,
+                  colorLevel,
+                }}
+              >
+                <UseDataSet id='ctData' />
+              </SliceRepresentation>
+            </View>
+          </div>
+        </div>
       </ShareDataSetRoot>
-    </div>
+    </MultiViewRoot>
   );
 }
 
