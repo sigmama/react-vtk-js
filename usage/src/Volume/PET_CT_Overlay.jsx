@@ -140,9 +140,11 @@ const loadData = async () => {
     ptWebWorkers.terminateWorkers();
     ptImageData = vtkITKHelper.convertItkToVtkImage(ptitkImage);
   }
-  console.log(ctImageData.getDimensions(), ptImageData.getDimensions());
   loadData.setMaxKSlice(ctImageData.getDimensions()[2] - 1);
   loadData.setMaxJSlice(ptImageData.getDimensions()[1] - 1);
+  const range = ptImageData?.getPointData()?.getScalars()?.getRange();
+  loadData.setPTColorWindow(range[1] - range[0]);
+  loadData.setPTColorLevel((range[1] + range[0]) * 0.5);
   loadData.setStatusText('');
   loader.hidden = 'hidden';
   return [ctImageData, ptImageData];
@@ -155,6 +157,8 @@ function Example(props) {
   const [ctjSlice, setCTJSlice] = useState(0);
   const [colorWindow, setColorWindow] = useState(2048);
   const [colorLevel, setColorLevel] = useState(0);
+  const [ptcolorWindow, setPTColorWindow] = useState(69222);
+  const [ptcolorLevel, setPTColorLevel] = useState(34611);
   const [colorPreset, setColorPreset] = useState('jet');
   const [opacity, setOpacity] = useState(0.4);
   const [maxKSlice, setMaxKSlice] = useState(310);
@@ -162,6 +166,8 @@ function Example(props) {
   loadData.setMaxKSlice = setMaxKSlice;
   loadData.setMaxJSlice = setMaxJSlice;
   loadData.setStatusText = setStatusText;
+  loadData.setPTColorWindow = setPTColorWindow;
+  loadData.setPTColorLevel = setPTColorLevel;
 
   useEffect(() => {
     loadData().then(([ctData, ptData]) => {
@@ -263,8 +269,11 @@ function Example(props) {
                 kSlice={kSlice}
                 property={{
                   opacity,
+                  colorWindow: ptcolorWindow,
+                  colorLevel: ptcolorLevel,
                 }}
                 colorMapPreset={colorPreset}
+                useLookupTableScalarRange={false}
               >
                 <UseDataSet id='ptData' />
               </SliceRepresentation>
@@ -311,8 +320,11 @@ function Example(props) {
                 jSlice={jSlice}
                 property={{
                   opacity,
+                  colorWindow: ptcolorWindow,
+                  colorLevel: ptcolorLevel,
                 }}
                 colorMapPreset={colorPreset}
+                useLookupTableScalarRange={false}
               >
                 <UseDataSet id='ptData' />
               </SliceRepresentation>
