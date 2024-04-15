@@ -32,6 +32,7 @@ const demos = new Map([
     'Volume/ImageSeriesRendering',
     lazy(() => import('./Volume/ImageSeriesRendering')),
   ],
+  ['Volume/PET_CT_Overlay', lazy(() => import('./Volume/PET_CT_Overlay'))],
   ['Tests/PropertyUpdate', lazy(() => import('./Tests/PropertyUpdate'))],
   ['Tests/CameraTest', lazy(() => import('./Tests/CameraTest'))],
   ['Tests/ShareGeometry', lazy(() => import('./Tests/ShareGeometry'))],
