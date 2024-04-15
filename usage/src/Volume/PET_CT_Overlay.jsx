@@ -267,6 +267,13 @@ function Example(props) {
               />
               <SliceRepresentation
                 kSlice={kSlice}
+                mapper={{
+                  resolveCoincidentTopology: 'Polygon',
+                  resolveCoincidentTopologyPolygonOffsetParameters: {
+                    factor: 0,
+                    offset: 2,
+                  },
+                }}
                 property={{
                   opacity,
                   colorWindow: ptcolorWindow,
@@ -318,6 +325,13 @@ function Example(props) {
               <SliceRepresentation
                 id='pt'
                 jSlice={jSlice}
+                mapper={{
+                  resolveCoincidentTopology: 'Polygon',
+                  resolveCoincidentTopologyPolygonOffsetParameters: {
+                    factor: 0,
+                    offset: 2,
+                  },
+                }}
                 property={{
                   opacity,
                   colorWindow: ptcolorWindow,
