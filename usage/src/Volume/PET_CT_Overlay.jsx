@@ -2,6 +2,7 @@ import vtkITKHelper from '@kitware/vtk.js/Common/DataModel/ITKHelper';
 import vtkLiteHttpDataAccessHelper from '@kitware/vtk.js/IO/Core/DataAccessHelper/LiteHttpDataAccessHelper';
 import vtkResourceLoader from '@kitware/vtk.js/IO/Core/ResourceLoader';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps.js';
+import { BlendMode } from '@kitware/vtk.js/Rendering/Core/VolumeMapper/Constants.js';
 import { unzipSync } from 'fflate';
 import { useContext, useEffect, useState } from 'react';
 import './PET_CT_Overlay.css';
@@ -15,6 +16,7 @@ import {
   SliceRepresentation,
   UseDataSet,
   View,
+  VolumeRepresentation,
 } from 'react-vtk-js';
 
 function Slider(props) {
@@ -243,7 +245,7 @@ function Example(props) {
             style={{
               position: 'absolute',
               left: '0px',
-              width: '50%',
+              width: '33%',
               height: '100%',
             }}
           >
@@ -298,8 +300,8 @@ function Example(props) {
           <div
             style={{
               position: 'absolute',
-              left: '50%',
-              width: '50%',
+              left: '33%',
+              width: '33%',
               height: '100%',
             }}
           >
@@ -351,6 +353,37 @@ function Example(props) {
               >
                 <UseDataSet id='ctData' />
               </SliceRepresentation>
+            </View>
+          </div>
+          <div
+            style={{
+              position: 'absolute',
+              left: '66%',
+              width: '33%',
+              height: '100%',
+            }}
+          >
+            <View
+              id='0'
+              camera={{
+                position: [0, 0, 0],
+                focalPoint: [0, 1, 0],
+                viewUp: [0, 0, 1],
+                parallelProjection: true,
+              }}
+              background={[0, 0, 0]}
+            >
+              <VolumeRepresentation
+                mapper={{
+                  blendMode: BlendMode.MAXIMUM_INTENSITY_BLEND,
+                  maximumSamplesPerRay: 2000,
+                }}
+                colorMapPreset='Grayscale'
+                useLookupTableScalarRange={false}
+                shade={false}
+              >
+                <UseDataSet id='ptData' />
+              </VolumeRepresentation>
             </View>
           </div>
         </div>
