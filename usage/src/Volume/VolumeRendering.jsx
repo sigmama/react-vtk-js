@@ -1,4 +1,5 @@
 import vtkXMLImageDataReader from '@kitware/vtk.js/IO/XML/XMLImageDataReader';
+import { useRef } from 'react';
 import {
   Reader,
   View,
@@ -7,9 +8,19 @@ import {
 } from 'react-vtk-js';
 
 function Example() {
+  const view = useRef();
+  const run = () => {
+    const v = view.current;
+    const camera = v.getCamera();
+    camera.azimuth(0.5);
+    v.requestRender();
+    requestAnimationFrame(run);
+  };
+
   return (
     <div style={{ width: '100%', height: '100%' }}>
-      <View id='0'>
+      <button onClick={run}>Rotate</button>
+      <View id='0' ref={view}>
         <VolumeRepresentation>
           <VolumeController />
           <Reader

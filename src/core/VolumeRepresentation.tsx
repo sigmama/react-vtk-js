@@ -1,5 +1,7 @@
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
+import vtkPiecewiseFunction from '@kitware/vtk.js/Common/DataModel/PiecewiseFunction';
+import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkVolume, {
   IVolumeInitialValues,
 } from '@kitware/vtk.js/Rendering/Core/Volume';
@@ -26,6 +28,7 @@ import {
   RepresentationContext,
   useRendererContext,
 } from './contexts';
+import useColorAndOpacity from './modules/useColorAndOpacity';
 import useColorTransferFunction from './modules/useColorTransferFunction';
 import useDataEvents from './modules/useDataEvents';
 import useDataRange from './modules/useDataRange';
@@ -68,6 +71,20 @@ export interface VolumeRepresentationProps extends PropsWithChildren {
    * Data range use for the colorMap
    */
   colorDataRange?: 'auto' | Vector2;
+
+  /**
+   * Specify the color transfer functions.
+   *
+   * Each index cooresponds to an image component. There are max 4 components supported.
+   */
+  colorTransferFunctions?: Array<vtkColorTransferFunction | null | undefined>;
+
+  /**
+   * Specify the scalar opacity functions.
+   *
+   * Each index cooresponds to an image component. There are max 4 components supported.
+   */
+  scalarOpacityFunctions?: Array<vtkPiecewiseFunction | null | undefined>;
 
   /**
    * Event callback for when data is made available.
@@ -164,6 +181,10 @@ export default forwardRef(function VolumeRepresentation(
     trackModified,
   });
 
+  // --- color and opacity --- //
+
+  const { colorTransferFunctions, scalarOpacityFunctions } = props;
+
   useEffect(() => {
     getActor().setMapper(getMapper());
   }, [getActor, getMapper]);
@@ -173,6 +194,13 @@ export default forwardRef(function VolumeRepresentation(
     getActor().getProperty().setScalarOpacity(0, getPiecewiseFunction());
     getActor().getProperty().setInterpolationTypeToLinear();
   }, [getActor, getLookupTable, getPiecewiseFunction]);
+
+  useColorAndOpacity(
+    getActor,
+    colorTransferFunctions,
+    scalarOpacityFunctions,
+    trackModified
+  );
 
   // set actor property props
   const { property: propertyProps } = props;
