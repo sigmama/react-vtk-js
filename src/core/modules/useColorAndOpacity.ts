@@ -37,7 +37,7 @@ export default function useColorAndOpacity<
     const property = getActor().getProperty();
 
     colorTransferFunctions.forEach((fn, component) => {
-      property.setRGBTransferFunction(component, fn);
+      property.setRGBTransferFunction(component, fn ?? null);
     });
 
     return () => {
@@ -52,7 +52,7 @@ export default function useColorAndOpacity<
     const property = getActor().getProperty();
 
     scalarOpacityFunctions.forEach((fn, component) => {
-      property.setScalarOpacity(component, fn);
+      property.setScalarOpacity(component, fn ?? null);
     });
 
     return () => {
