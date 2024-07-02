@@ -147,4 +147,6 @@ export default function Reader(props: ReaderProps) {
 
     downstream.setInputConnection(reader.getOutputPort(), port);
   });
+
+  return <></>;
 }
