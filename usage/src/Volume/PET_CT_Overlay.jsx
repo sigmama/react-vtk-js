@@ -27,7 +27,9 @@ function Slider(props) {
   const onChange = (e) => {
     const value = Number(e.currentTarget.value);
     props.setValue(value);
-    props.setPTValue(value);
+    if (props.setPTValue) {
+      props.setPTValue(value);
+    }
     setTimeout(view?.renderView, 0);
   };
   return (
@@ -288,6 +290,9 @@ function Example(props) {
     }
   }, [window.ctData, window.ptData]);
 
+  const cdrMin = ptcolorLevel - ptcolorWindow / 2.0;
+  const cdrMax = ptcolorLevel + ptcolorWindow / 2.0;
+
   return (
     <MultiViewRoot>
       <input id='fileInput' type='file' className='file' accept='.zip' onChange={loadLocalData}/>
@@ -348,6 +353,20 @@ function Example(props) {
             value={colorPreset}
             setValue={setColorPreset}
             style={{ top: '10px', left: '405px' }}
+          />
+          <Slider
+            label='PET Level'
+            max={34611}
+            value={ptcolorLevel}
+            setValue={setPTColorLevel}
+            style={{ top: '90px', left: '5px' }}
+          />
+          <Slider
+            label='PET Window'
+            max={69222}
+            value={ptcolorWindow}
+            setValue={setPTColorWindow}
+            style={{ top: '124px', left: '5px' }}
           />
           <div className='loader' id='loader' />
           <div
@@ -488,6 +507,7 @@ function Example(props) {
                   maximumSamplesPerRay: 2000,
                 }}
                 colorMapPreset='Grayscale'
+                colorDataRange={[cdrMin, cdrMax]}
                 useLookupTableScalarRange={false}
                 shade={false}
               >
