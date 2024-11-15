@@ -4,6 +4,7 @@ import AbstractImageMapper, {
   vtkAbstractImageMapper,
 } from '@kitware/vtk.js/Rendering/Core/AbstractImageMapper';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
+import { IColorMapPreset } from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import vtkImageArrayMapper from '@kitware/vtk.js/Rendering/Core/ImageArrayMapper';
 import vtkImageMapper, {
   IImageMapperInitialValues,
@@ -64,9 +65,9 @@ export interface SliceRepresentationProps extends PropsWithChildren {
   property?: IImagePropertyInitialValues;
 
   /**
-   * Preset name for the lookup table color map
+   * Preset name for the lookup table color map or user provided color map preset
    */
-  colorMapPreset?: string;
+  colorMapPreset?: string | IColorMapPreset;
 
   /**
    * Data range use for the colorMap

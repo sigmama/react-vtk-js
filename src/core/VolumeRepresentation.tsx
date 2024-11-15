@@ -2,6 +2,7 @@ import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 import vtkPiecewiseFunction from '@kitware/vtk.js/Common/DataModel/PiecewiseFunction';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
+import { IColorMapPreset } from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import vtkVolume, {
   IVolumeInitialValues,
 } from '@kitware/vtk.js/Rendering/Core/Volume';
@@ -63,9 +64,9 @@ export interface VolumeRepresentationProps extends PropsWithChildren {
   property?: IVolumePropertyInitialValues;
 
   /**
-   * Preset name for the lookup table color map
+   * Preset name for the lookup table color map or user provided color map preset
    */
-  colorMapPreset?: string;
+  colorMapPreset?: string | IColorMapPreset;
 
   /**
    * Data range use for the colorMap

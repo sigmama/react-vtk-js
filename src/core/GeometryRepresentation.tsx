@@ -2,6 +2,7 @@ import vtkPolyData from '@kitware/vtk.js/Common/DataModel/PolyData';
 import vtkActor, {
   IActorInitialValues,
 } from '@kitware/vtk.js/Rendering/Core/Actor';
+import { IColorMapPreset } from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import vtkMapper, {
   IMapperInitialValues,
 } from '@kitware/vtk.js/Rendering/Core/Mapper';
@@ -52,9 +53,9 @@ export interface GeometryRepresentationProps extends PropsWithChildren {
   property?: IPropertyInitialValues;
 
   /**
-   * Preset name for the lookup table color map
+   * Preset name for the lookup table color map or user provided color map preset
    */
-  colorMapPreset?: string;
+  colorMapPreset?: string | IColorMapPreset;
 
   /**
    * Data range use for the colorMap
